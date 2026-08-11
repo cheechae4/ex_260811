@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>기말 프로젝트 — 작품 모음</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --bg:#F7F5FB; --card:#FFFFFF; --ink:#332C45; --muted:#8B8299;
+  --line:#E8E3F2; --shadow:0 8px 24px rgba(51,44,69,.10);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#1E1930; --card:#2A2342; --ink:#F1EDF9; --muted:#A79CBF; --line:#413860; --shadow:0 8px 24px rgba(0,0,0,.35) }
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink); min-height:100vh;
+  font-family:"Apple SD Gothic Neo","Pretendard","Noto Sans KR",system-ui,sans-serif;
+  display:flex; align-items:center; justify-content:center; padding:32px 20px;
+}
+.wrap{max-width:680px; width:100%}
+h1{font-size:clamp(24px,5vw,32px); font-weight:800; letter-spacing:-.5px; margin:0 0 6px; text-align:center}
+.sub{color:var(--muted); text-align:center; font-size:15px; margin:0 0 32px}
+.grid{display:grid; gap:14px}
+a.item{
+  display:flex; align-items:center; gap:16px; text-decoration:none; color:var(--ink);
+  background:var(--card); border:1px solid var(--line); border-radius:18px;
+  padding:18px 20px; box-shadow:var(--shadow);
+  transition:transform .15s, box-shadow .15s;
+}
+a.item:hover{transform:translateY(-3px)}
+.emoji{font-size:30px; flex:none}
+.t{font-size:16.5px; font-weight:700; margin:0}
+.d{font-size:13.5px; color:var(--muted); margin:2px 0 0}
+.arrow{margin-left:auto; color:var(--muted); font-size:18px}
+footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🗂️ 기말 프로젝트 작품 모음</h1>
+  <p class="sub">보고 싶은 작품을 골라주세요</p>
+  <div class="grid">
+    <a class="item" href="/propose-minimal.html">
+      <span class="emoji">💚</span>
+      <span><p class="t">프로포즈 — 미니멀 랜딩 에디션</p><p class="d">스타트업 서비스 소개 페이지 컨셉 · 평생 구독 패러디</p></span>
+      <span class="arrow">→</span>
+    </a>
+    <a class="item" href="/propose.html">
+      <span class="emoji">🖤</span>
+      <span><p class="t">프로포즈 — 부가티 에디션</p><p class="d">모노크롬 럭셔리 · THE PROPOSAL, EDITION 1 OF 1</p></span>
+      <span class="arrow">→</span>
+    </a>
+    <a class="item" href="/propose-cute.html">
+      <span class="emoji">🎀</span>
+      <span><p class="t">프로포즈 — 러브레터 에디션</p><p class="d">토끼와 반지, 도망가는 싫어 버튼의 원조 귀요미 버전</p></span>
+      <span class="arrow">→</span>
+    </a>
+    <a class="item" href="/로또폴더/lotto.html">
+      <span class="emoji">🍀</span>
+      <span><p class="t">복슬로또 — 로또 번호 추첨기</p><p class="d">1~1,236회 실제 당첨 데이터 · 4가지 전략 · 빈도 차트</p></span>
+      <span class="arrow">→</span>
+    </a>
+  </div>
+  <footer>2026 도전학기 기말 프로젝트</footer>
+</div>
+</body>
+</html>
