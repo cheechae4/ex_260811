@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍀 귀여운 로또 번호 추첨기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #ffd6e8;
+    --purple: #e0c3fc;
+    --yellow: #fff6b7;
+    --card: #ffffff;
+    --text: #5b4b8a;
+    --muted: #a89bc4;
+    --accent: #ff8fab;
+    --accent2: #ffc93c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--pink), var(--purple) 50%, var(--yellow));
+    background-size: 200% 200%;
+    animation: bgmove 10s ease infinite;
+    font-family: 'Gaegu', sans-serif;
+    color: var(--text);
+    padding: 20px;
+  }
+  @keyframes bgmove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .card {
+    background: var(--card);
+    border-radius: 32px;
+    padding: 36px 30px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 20px 50px rgba(180, 140, 200, 0.35);
+    text-align: center;
+    border: 4px solid #fff;
+    position: relative;
+  }
+  .sparkle {
+    position: absolute;
+    font-size: 22px;
+    animation: twinkle 1.6s ease-in-out infinite;
+  }
+  .sparkle.s1 { top: 10px; left: 14px; animation-delay: 0s; }
+  .sparkle.s2 { top: 18px; right: 18px; animation-delay: 0.5s; }
+  .sparkle.s3 { bottom: 14px; left: 24px; animation-delay: 1s; }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.2) rotate(15deg); }
+  }
+  h1 {
+    font-family: 'Jua', sans-serif;
+    margin: 6px 0 4px;
+    font-size: 30px;
+    color: var(--accent);
+    text-shadow: 2px 2px 0 #ffe3ef;
+  }
+  p.sub {
+    margin: 0 0 22px;
+    color: var(--muted);
+    font-size: 16px;
+  }
+  .mode-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    background: #f4effc;
+    border-radius: 999px;
+    padding: 5px;
+  }
+  .mode-toggle button {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 8px;
+    border-radius: 999px;
+    font-family: 'Gaegu', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .mode-toggle button.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(255, 143, 171, 0.4);
+  }
+  .balls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-height: 84px;
+    margin-bottom: 14px;
+  }
+  .ball {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Jua', sans-serif;
+    font-size: 21px;
+    color: #fff;
+    border: 3px solid #fff;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15), inset -3px -3px 6px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: scale(0.3) translateY(-20px);
+    animation: pop 0.55s cubic-bezier(.5,1.8,.5,1) forwards;
+  }
+  @keyframes pop {
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .yellow { background: linear-gradient(145deg, #ffd93d, #ffb703); }
+  .blue   { background: linear-gradient(145deg, #8ecdf0, #4ea8de); }
+  .red    { background: linear-gradient(145deg, #ff9aa2, #ff6f7e); }
+  .gray   { background: linear-gradient(145deg, #cfd3da, #a3a9b4); }
+  .green  { background: linear-gradient(145deg, #c3e88d, #97c664); }
+
+  .note {
+    font-size: 13px;
+    color: var(--muted);
+    min-height: 34px;
+    margin-bottom: 18px;
+    line-height: 1.5;
+  }
+
+  button#drawBtn {
+    background: var(--accent2);
+    color: #6b4a00;
+    border: none;
+    padding: 14px 34px;
+    border-radius: 999px;
+    font-family: 'Jua', sans-serif;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #e0a800;
+    transition: transform 0.1s ease;
+  }
+  button#drawBtn:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #e0a800;
+  }
+  button#drawBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .history {
+    margin-top: 24px;
+    text-align: left;
+  }
+  .history h2 {
+    font-family: 'Jua', sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0 0 10px;
+    font-weight: 400;
+  }
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .history-item .mini {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-family: 'Jua', sans-serif;
+    color: #fff;
+  }
+  .history-item .tag {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+  footer {
+    margin-top: 20px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <span class="sparkle s1">✨</span>
+  <span class="sparkle s2">🍀</span>
+  <span class="sparkle s3">⭐</span>
+
+  <h1>🐰 귀염뽀짝 로또 추첨기 🎀</h1>
+  <p class="sub">1 ~ 45 중 6개 번호를 뽑아줄게요!</p>
+
+  <div class="mode-toggle">
+    <button id="modeRandomBtn" class="active" onclick="setMode('random')">🎲 완전 랜덤</button>
+    <button id="modeSmartBtn" onclick="setMode('smart')">🔬 스마트 추첨</button>
+  </div>
+
+  <div class="balls" id="balls"></div>
+  <div class="note" id="note"></div>
+
+  <button id="drawBtn" onclick="draw()">번호 뽑기 💫</button>
+
+  <div class="history" id="history" style="display:none;">
+    <h2>📜 이전 기록</h2>
+    <div id="historyList"></div>
+  </div>
+
+  <footer>
+    ※ 로또는 매 회차 독립적인 완전 무작위 추첨이라 과거 데이터로 다음 결과를 예측할 수 없어요.<br>
+    스마트 모드는 실제 당첨번호 통계에서 자주 보이는 패턴(합계·홀짝·고저 비율, AC값 등)을 참고한 재미용 기능입니다.
+  </footer>
+</div>
+
+<script>
+  let mode = 'random';
+
+  function setMode(m) {
+    mode = m;
+    document.getElementById('modeRandomBtn').classList.toggle('active', m === 'random');
+    document.getElementById('modeSmartBtn').classList.toggle('active', m === 'smart');
+    document.getElementById('note').textContent =
+      m === 'smart'
+        ? '실제 당첨번호 통계 패턴을 반영해서 뽑아요 (합계 100~175, 홀짝/고저 균형, 연속번호 최소화 등)'
+        : '';
+  }
+
+  function ballColor(n) {
+    if (n <= 10) return 'yellow';
+    if (n <= 20) return 'blue';
+    if (n <= 30) return 'red';
+    if (n <= 40) return 'gray';
+    return 'green';
+  }
+
+  function generateRandomSet() {
+    const numbers = new Set();
+    while (numbers.size < 6) {
+      numbers.add(Math.floor(Math.random() * 45) + 1);
+    }
+    return Array.from(numbers).sort((a, b) => a - b);
+  }
+
+  // AC(Arithmetic Complexity)값: 6개 번호의 모든 쌍의 차이값 중 서로 다른 값의 개수 - (n-1)
+  // 실제 로또 당첨번호 분석에서 번호 조합의 무작위성을 가늠하는 지표로 자주 쓰이며,
+  // 과거 당첨 데이터 상 대체로 7~10 사이에 분포하는 경향이 있음
+  function acValue(nums) {
+    const diffs = new Set();
+    for (let i = 0; i < nums.length; i++) {
+      for (let j = i + 1; j < nums.length; j++) {
+        diffs.add(Math.abs(nums[i] - nums[j]));
+      }
+    }
+    return diffs.size - (nums.length - 1);
+  }
+
+  function hasLongConsecutiveRun(nums) {
+    let run = 1;
+    for (let i = 1; i < nums.length; i++) {
+      if (nums[i] === nums[i - 1] + 1) {
+        run++;
+        if (run >= 3) return true;
+      } else {
+        run = 1;
+      }
+    }
+    return false;
+  }
+
+  function isStatisticallyTypical(nums) {
+    const sum = nums.reduce((a, b) => a + b, 0);
+    if (sum < 100 || sum > 175) return false;
+
+    const oddCount = nums.filter(n => n % 2 === 1).length;
+    if (oddCount < 2 || oddCount > 4) return false; // 2:4 ~ 4:2 비율만 허용
+
+    const lowCount = nums.filter(n => n <= 22).length;
+    if (lowCount < 2 || lowCount > 4) return false; // 저(1-22):고(23-45) 균형
+
+    if (hasLongConsecutiveRun(nums)) return false; // 3개 이상 연속 회피
+
+    if (acValue(nums) < 7) return false; // 너무 규칙적인 조합 회피
+
+    return true;
+  }
+
+  function generateSmartSet() {
+    let candidate;
+    let attempts = 0;
+    do {
+      candidate = generateRandomSet();
+      attempts++;
+    } while (!isStatisticallyTypical(candidate) && attempts < 2000);
+    return candidate;
+  }
+
+  function draw() {
+    const btn = document.getElementById('drawBtn');
+    const ballsEl = document.getElementById('balls');
+    btn.disabled = true;
+    ballsEl.innerHTML = '';
+
+    const numbers = mode === 'smart' ? generateSmartSet() : generateRandomSet();
+
+    numbers.forEach((n, i) => {
+      const ball = document.createElement('div');
+      ball.className = `ball ${ballColor(n)}`;
+      ball.textContent = n;
+      ball.style.animationDelay = `${i * 0.12}s`;
+      ballsEl.appendChild(ball);
+    });
+
+    addHistory(numbers, mode);
+    setTimeout(() => { btn.disabled = false; }, 700);
+  }
+
+  function addHistory(numbers, usedMode) {
+    const historyWrap = document.getElementById('history');
+    const list = document.getElementById('historyList');
+    historyWrap.style.display = 'block';
+
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    numbers.forEach(n => {
+      const mini = document.createElement('span');
+      mini.className = `mini ${ballColor(n)}`;
+      mini.textContent = n;
+      item.appendChild(mini);
+    });
+    const tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = usedMode === 'smart' ? '🔬 스마트' : '🎲 랜덤';
+    item.appendChild(tag);
+    list.prepend(item);
+
+    while (list.children.length > 6) {
+      list.removeChild(list.lastChild);
+    }
+  }
+</script>
+
+</body>
+</html>

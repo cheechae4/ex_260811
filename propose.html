@@ -1,0 +1,338 @@
+<title>나와 결혼해 줄래? — THE PROPOSAL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<style>
+/* ── Bugatti design system (DESIGN_bugatti.md) ──
+   canvas #000 · monochrome only · weight 400 only ·
+   Display(sans, wide tracking, uppercase) / Text(serif body) / Monospace(buttons·captions) ·
+   radius 0 everywhere except pill buttons · transparent CTA with 1px white outline */
+:root{
+  --canvas:#000000; --surface-soft:#0d0d0d; --surface-card:#141414;
+  --ink:#ffffff; --body:#cccccc; --body-strong:#e6e6e6;
+  --muted:#999999; --muted-soft:#666666;
+  --hairline:#262626; --hairline-strong:#3a3a3a; --link:#c3d9f3;
+  --display:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo",Roboto,sans-serif;
+  --serif:Garamond,"Times New Roman","Apple SD Gothic Neo",serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Mono",monospace;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0; overflow:hidden; background:var(--canvas); color:var(--ink);
+  font-family:var(--serif); font-weight:400;
+  user-select:none; -webkit-user-select:none;
+}
+b,strong,h1,h2{font-weight:400} /* the system has no bold weight */
+/* ── top nav ── */
+nav{
+  position:fixed; top:0; left:0; right:0; z-index:6; height:56px;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 24px; background:transparent;
+}
+nav .side{font-family:var(--mono); font-size:12px; letter-spacing:2px; color:var(--ink); text-transform:uppercase}
+nav .wordmark{
+  font-family:var(--display); font-size:14px; letter-spacing:6px; text-transform:uppercase;
+  position:absolute; left:50%; transform:translateX(-50%);
+}
+/* ── hero ── */
+.hero{
+  height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:72px 24px 210px; position:relative; z-index:2;
+}
+/* the ring — drawn in hairlines; photography stand-in, engineered not decorated */
+.ring-figure{position:relative; width:130px; height:142px; margin-bottom:28px; flex:none}
+.ring-figure .band{
+  position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+  width:98px; height:98px; border-radius:50%;
+  border:1px solid var(--ink);
+}
+.ring-figure .band::after{ /* inner band hairline */
+  content:""; position:absolute; inset:5px; border-radius:50%;
+  border:1px solid var(--hairline-strong);
+}
+.ring-figure .stone{
+  position:absolute; left:50%; top:22px; transform:translateX(-50%) rotate(45deg);
+  width:23px; height:23px; border:1px solid var(--ink);
+}
+.ring-figure .stone::after{ /* facet cross */
+  content:""; position:absolute; inset:0;
+  background:
+    linear-gradient(to right, transparent calc(50% - .5px), var(--hairline-strong) calc(50% - .5px), var(--hairline-strong) calc(50% + .5px), transparent calc(50% + .5px)),
+    linear-gradient(to bottom, transparent calc(50% - .5px), var(--hairline-strong) calc(50% - .5px), var(--hairline-strong) calc(50% + .5px), transparent calc(50% + .5px));
+}
+.ring-figure .sparkle{
+  position:absolute; left:50%; top:2px; transform:translateX(-50%);
+  font-family:var(--mono); font-size:11px; letter-spacing:2px; color:var(--muted);
+}
+.to-name{
+  font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--muted); margin:0 0 16px;
+}
+.to-name:empty{display:none}
+.caption{
+  font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--muted); margin:0 0 24px;
+}
+h1{
+  font-family:var(--display); font-size:clamp(30px,6vw,56px); letter-spacing:4px;
+  line-height:1.15; margin:0 0 20px; text-transform:uppercase; text-wrap:balance;
+}
+.lead{
+  font-family:var(--serif); font-size:16px; line-height:1.5; color:var(--body);
+  max-width:34em; margin:0 0 44px;
+}
+/* ── buttons: transparent pill, 1px white outline ── */
+.btns{display:flex; gap:24px; justify-content:center; align-items:center; min-height:48px; flex-wrap:wrap}
+button{
+  font-family:var(--mono); font-size:14px; font-weight:400; letter-spacing:2.5px; text-transform:uppercase;
+  background:transparent; color:var(--ink);
+  border:1px solid var(--ink); border-radius:9999px;
+  padding:14px 32px; height:44px; line-height:1; cursor:pointer;
+  transition:background .25s, color .25s, font-size .3s, padding .3s;
+}
+#yes:hover{background:var(--ink); color:var(--canvas)}
+#yes:active{background:var(--body-strong); border-color:var(--body-strong); color:var(--canvas)}
+#no{border-color:var(--hairline-strong); color:var(--muted)}
+#no.fleeing{position:fixed; z-index:5; margin:0; transition:left 1.1s cubic-bezier(.16,.9,.28,1), top 1.1s cubic-bezier(.16,.9,.28,1), border-color .25s, color .25s}
+/* flee trace — an expanding hairline ring, engineered not decorated */
+.trace{
+  position:fixed; z-index:4; pointer-events:none; border:1px solid var(--hairline-strong);
+  border-radius:50%; animation:trace .9s ease-out forwards;
+}
+@keyframes trace{0%{opacity:.9; transform:scale(.3)}100%{opacity:0; transform:scale(1.6)}}
+/* ── taunt line ── */
+.taunt{
+  font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--muted); margin-top:40px; min-height:1.5em; opacity:0; transition:opacity .4s;
+}
+.taunt.show{opacity:1}
+/* ── spec band ── */
+.specs{
+  position:fixed; left:0; right:0; bottom:56px; z-index:2;
+  display:grid; grid-template-columns:repeat(4,1fr);
+  max-width:1280px; margin:0 auto; padding:0 24px;
+}
+.spec{
+  padding:24px 0; text-align:center; border-top:1px solid var(--hairline);
+}
+.spec .v{font-family:var(--display); font-size:20px; letter-spacing:1px; text-transform:uppercase}
+.spec .k{font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted-soft); margin-top:8px}
+/* ── footer line ── */
+.foot{
+  position:fixed; left:0; right:0; bottom:0; z-index:2; height:56px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--serif); font-size:14px; color:var(--muted-soft);
+}
+/* ── overlay / popup ── */
+.overlay{
+  position:fixed; inset:0; z-index:10; display:none;
+  align-items:center; justify-content:center; background:rgba(0,0,0,.75);
+}
+.overlay.show{display:flex}
+.popup{
+  background:var(--surface-card); border:1px solid var(--hairline);
+  padding:64px 56px; text-align:center; max-width:440px; margin:24px;
+  animation:reveal .8s ease both;
+}
+@keyframes reveal{0%{opacity:0; transform:translateY(14px)}100%{opacity:1; transform:translateY(0)}}
+.popup .cap{font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin:0 0 24px}
+.popup h2{font-family:var(--display); font-size:32px; letter-spacing:2px; text-transform:uppercase; margin:0 0 24px}
+.popup p{font-family:var(--serif); font-size:16px; line-height:1.5; color:var(--body); margin:0 0 40px}
+.popup .stamp{
+  display:inline-block; font-family:var(--mono); font-size:11px; letter-spacing:2px;
+  text-transform:uppercase; color:var(--muted);
+  border-top:1px solid var(--hairline-strong); padding-top:16px;
+}
+/* ── rising hearts: monochrome, hairline-quiet ── */
+.heart{
+  position:fixed; z-index:1; pointer-events:none; color:var(--muted-soft);
+  font-family:var(--serif); animation:rise linear forwards; will-change:transform,opacity;
+}
+.heart.bright{color:var(--body)}
+@keyframes rise{
+  0%{transform:translateY(0) rotate(0); opacity:0}
+  15%{opacity:.8}
+  100%{transform:translateY(-110vh) rotate(24deg); opacity:0}
+}
+@media (prefers-reduced-motion: reduce){ .heart{display:none} }
+@media (max-width:768px){
+  .specs{grid-template-columns:repeat(2,1fr); bottom:48px}
+  .spec{padding:14px 0}
+  .spec .v{font-size:16px}
+  .foot{height:48px; font-size:12px}
+  .hero{padding-bottom:170px}
+  .lead{margin-bottom:40px}
+  .ring-figure{width:120px; height:140px; margin-bottom:28px}
+  .ring-figure .band{width:96px; height:96px}
+}
+</style>
+
+<nav>
+  <span class="side">Menu</span>
+  <span class="wordmark">The Proposal</span>
+  <span class="side">Forever</span>
+</nav>
+
+<main class="hero">
+  <figure class="ring-figure" aria-hidden="true">
+    <span class="sparkle">✦</span>
+    <span class="stone"></span>
+    <span class="band"></span>
+  </figure>
+  <p class="to-name" id="to-name"></p>
+  <p class="caption">Edition one of one — Will you marry me</p>
+  <h1>나와<br>결혼해 줄래?</h1>
+  <p class="lead">신중하게 대답해 주기를 바란다. 다만, 이 모델의 응답 사양은 단 하나로 설계되어 있다.</p>
+  <div class="btns">
+    <button id="yes">좋아 — Yes</button>
+    <button id="no">싫어 — No</button>
+  </div>
+  <p class="taunt" id="taunt"></p>
+</main>
+
+<div class="specs" aria-label="specifications">
+  <div class="spec"><div class="v">1 of 1</div><div class="k">Edition — 세상에 단 하나</div></div>
+  <div class="spec"><div class="v">∞</div><div class="k">Warranty — 평생 보증</div></div>
+  <div class="spec"><div class="v">180 BPM</div><div class="k">Heart rate at full throttle</div></div>
+  <div class="spec"><div class="v">100 %</div><div class="k">Acceptance probability</div></div>
+</div>
+
+<div class="foot">우리의 이야기는 여기서부터 시작된다.</div>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="thanks">
+  <div class="popup">
+    <p class="cap">Order confirmed</p>
+    <h2 id="thanks">고마워</h2>
+    <p id="thanks-msg">세상에서 제일 행복하게 해줄게.<br>평생 잘 부탁해.</p>
+    <span class="stamp" id="stamp"></span>
+  </div>
+</div>
+
+<script>
+/* URL로 이름 커스텀: propose.html?to=지은&from=민준 */
+const params = new URLSearchParams(location.search);
+const to = params.get('to'), from = params.get('from');
+if (to) document.getElementById('to-name').textContent = `For ${to}`;
+if (from) document.getElementById('thanks-msg').innerHTML =
+  `세상에서 제일 행복하게 해줄게.<br>평생 잘 부탁해. — ${from}`;
+
+const yes = document.getElementById('yes');
+const no = document.getElementById('no');
+const taunt = document.getElementById('taunt');
+let dodges = 0, lastFlee = 0;
+
+const TAUNTS = [
+  "'싫어' 버튼은 현재 응답할 수 없습니다",
+  '정중히, 그러나 단호하게 거절을 거절합니다',
+  "이 모델에는 '싫어' 옵션이 탑재되지 않았습니다",
+  "출고 사양: 대답은 '좋아' 단일 트림",
+  '포기하십시오 — 공학적으로 불가능합니다',
+  '답은 이미 설계되어 있습니다',
+];
+
+/* 현재 위치를 fixed 좌표로 고정 */
+function pin() {
+  if (no.classList.contains('fleeing')) return;
+  const r = no.getBoundingClientRect();
+  no.classList.add('fleeing');
+  no.style.left = r.left + 'px';
+  no.style.top = r.top + 'px';
+}
+/* 슬금슬금 도망: 커서 반대 방향으로 미끄러짐 */
+function flee(px, py, opts = {}) {
+  const now = performance.now();
+  if (now - lastFlee < (opts.urgent ? 60 : 420)) return;
+  lastFlee = now;
+  dodges++;
+  pin();
+  const r = no.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  /* 떠난 자리에 헤어라인 링 트레이스 */
+  const t = document.createElement('span');
+  t.className = 'trace';
+  t.style.cssText = `left:${cx - 28}px; top:${cy - 28}px; width:56px; height:56px`;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 950);
+  /* 방향: 커서 반대쪽 + 살짝 랜덤 */
+  let ang = (px === undefined) ? Math.random() * Math.PI * 2 : Math.atan2(cy - py, cx - px);
+  ang += (Math.random() - .5) * .9;
+  const dist = opts.urgent ? 190 + Math.random() * 90 : 130 + Math.random() * 70;
+  const pad = 16;
+  let nx = r.left + Math.cos(ang) * dist;
+  let ny = r.top + Math.sin(ang) * dist;
+  const maxY = innerHeight - r.height - 120; /* 스펙 밴드는 피해서 */
+  if (nx < pad || nx > innerWidth - r.width - pad) nx = pad + Math.random() * (innerWidth - r.width - pad * 2);
+  if (ny < 64 || ny > maxY) ny = 64 + Math.random() * (maxY - 64);
+  /* 좋아 버튼 위에는 앉지 않는다 */
+  const yr = yes.getBoundingClientRect();
+  for (let i = 0; i < 20; i++) {
+    const clear = nx + r.width < yr.left - 10 || nx > yr.right + 10 || ny + r.height < yr.top - 10 || ny > yr.bottom + 10;
+    if (clear) break;
+    nx = pad + Math.random() * (innerWidth - r.width - pad * 2);
+    ny = 64 + Math.random() * (maxY - 64);
+  }
+  no.style.left = nx + 'px';
+  no.style.top = ny + 'px';
+  /* 도망갈수록 외곽선과 글자가 옅어진다 — 존재감이 사라져 가는 '싫어' */
+  const fade = Math.max(0, .6 - dodges * .07);
+  no.style.borderColor = `rgba(255,255,255,${.25 + fade * .2})`;
+  no.style.color = `rgba(255,255,255,${.35 + fade * .3})`;
+  taunt.textContent = TAUNTS[Math.min(dodges - 1, TAUNTS.length - 1)];
+  taunt.classList.add('show');
+  /* 좋아 버튼은 조용히 커진다 */
+  const g = Math.min(dodges, 6);
+  yes.style.fontSize = 14 + g + 'px';
+  yes.style.padding = `${14 + g}px ${32 + g * 3}px`;
+  yes.style.height = 'auto';
+}
+
+/* 데스크톱: 마우스가 다가오면 슬금슬금 */
+addEventListener('pointermove', e => {
+  if (e.pointerType && e.pointerType !== 'mouse') return;
+  const r = no.getBoundingClientRect();
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+  if (dist < r.width / 2 + 85) flee(e.clientX, e.clientY, { urgent: dist < r.width / 2 + 30 });
+});
+/* 모바일: 누르는 순간 도망 (click이 완성되기 전에 튐) */
+no.addEventListener('touchstart', e => { e.preventDefault(); const t = e.touches[0]; flee(t.clientX, t.clientY, { urgent: true }); }, { passive: false });
+no.addEventListener('pointerdown', e => { e.preventDefault(); flee(e.clientX, e.clientY, { urgent: true }); });
+no.addEventListener('keydown', e => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flee(undefined, undefined, { urgent: true }); taunt.textContent = '키보드 입력 또한 지원되지 않습니다'; }
+});
+no.addEventListener('click', e => { e.preventDefault(); flee(e.clientX, e.clientY, { urgent: true }); });
+/* 가만히 있어도 가끔 슬쩍 자리를 옮긴다 */
+setInterval(() => {
+  if (dodges > 0 && Math.random() < .45 && !document.getElementById('overlay').classList.contains('show'))
+    flee(undefined, undefined, {});
+}, 3800);
+
+/* 좋아 → 팝업 */
+const MONTHS = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+yes.addEventListener('click', () => {
+  const d = new Date();
+  document.getElementById('stamp').textContent =
+    `${String(d.getDate()).padStart(2,'0')}. ${MONTHS[d.getMonth()]} ${d.getFullYear()} — 우리가 약속한 날`;
+  document.getElementById('overlay').classList.add('show');
+  no.style.display = 'none';
+  taunt.classList.remove('show');
+  burst(30);
+});
+
+/* 모노크롬 하트 — 세리프 ♥, 회색조로만 */
+function spawnHeart(x, dur, size, delay = 0, bright = false) {
+  const h = document.createElement('span');
+  h.className = 'heart' + (bright ? ' bright' : '');
+  h.textContent = '♥';
+  h.style.cssText = `left:${x}px; bottom:-30px; font-size:${size}px; animation-duration:${dur}s; animation-delay:${delay}s`;
+  document.body.appendChild(h);
+  setTimeout(() => h.remove(), (dur + delay) * 1000 + 200);
+}
+function burst(n) {
+  for (let i = 0; i < n; i++)
+    spawnHeart(Math.random() * innerWidth, 2.4 + Math.random() * 2.2, 14 + Math.random() * 16, Math.random() * .9, Math.random() < .4);
+}
+/* 은은한 배경 하트 — 아주 드물게, 아주 조용히 */
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  setInterval(() => spawnHeart(Math.random() * innerWidth, 10 + Math.random() * 5, 11 + Math.random() * 8), 2600);
+}
+</script>
