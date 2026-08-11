@@ -34,6 +34,32 @@ a.item:hover{transform:translateY(-3px)}
 .d{font-size:13.5px; color:var(--muted); margin:2px 0 0}
 .arrow{margin-left:auto; color:var(--muted); font-size:18px}
 footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:28px}
+/* ── 링크 생성기 ── */
+.maker{
+  background:var(--card); border:1px solid var(--line); border-radius:18px;
+  padding:22px 20px; box-shadow:var(--shadow); margin-top:22px;
+}
+.maker h2{font-size:17px; font-weight:800; margin:0 0 4px}
+.maker .hint{font-size:13px; color:var(--muted); margin:0 0 16px}
+.maker .row{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px}
+.maker label{display:block; font-size:12px; font-weight:700; color:var(--muted); margin-bottom:4px}
+.maker input,.maker select{
+  width:100%; font-family:inherit; font-size:15px; color:var(--ink);
+  background:var(--bg); border:1.5px solid var(--line); border-radius:10px; padding:10px 12px;
+}
+.maker input:focus,.maker select:focus{outline:2px solid #A78BFA; border-color:transparent}
+.maker .gen{
+  width:100%; font-family:inherit; font-size:15px; font-weight:800; cursor:pointer;
+  background:var(--ink); color:var(--bg); border:none; border-radius:10px; padding:12px; margin-top:6px;
+}
+.result{display:none; margin-top:12px; gap:8px}
+.result.show{display:flex}
+.result input{flex:1; font-size:13px}
+.result button{
+  font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer; flex:none;
+  background:var(--bg); color:var(--ink); border:1.5px solid var(--line); border-radius:10px; padding:0 14px;
+}
+@media (max-width:520px){ .maker .row{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -62,7 +88,49 @@ footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:28px}
       <span class="arrow">→</span>
     </a>
   </div>
+  <div class="maker">
+    <h2>💌 프로포즈 링크 만들기</h2>
+    <p class="hint">신랑·신부 이름을 넣으면 상대방에게 보낼 전용 링크가 만들어져요</p>
+    <div class="row">
+      <div><label for="groom">신랑 이름</label><input id="groom" placeholder="예: 민준"></div>
+      <div><label for="bride">신부 이름</label><input id="bride" placeholder="예: 지은"></div>
+    </div>
+    <div class="row">
+      <div><label for="ver">디자인 버전</label>
+        <select id="ver">
+          <option value="propose-minimal.html">💚 미니멀 랜딩</option>
+          <option value="propose.html">🖤 부가티</option>
+          <option value="propose-cute.html">🎀 러브레터</option>
+        </select>
+      </div>
+      <div><label for="d0">사귄 날 (선택 · 미니멀 전용)</label><input id="d0" type="date"></div>
+    </div>
+    <button class="gen" id="gen">링크 생성하기</button>
+    <div class="result" id="result">
+      <input id="out" readonly>
+      <button id="copy">복사</button>
+      <button id="open">열기</button>
+    </div>
+  </div>
   <footer>2026 도전학기 기말 프로젝트</footer>
 </div>
+<script>
+const $ = id => document.getElementById(id);
+$('gen').addEventListener('click', () => {
+  const groom = $('groom').value.trim(), bride = $('bride').value.trim();
+  if (!groom || !bride) { alert('신랑·신부 이름을 모두 입력해 주세요!'); return; }
+  const q = new URLSearchParams({ groom, bride });
+  if ($('d0').value) q.set('d', $('d0').value);
+  const url = `${location.origin}/${$('ver').value}?${q}`;
+  $('out').value = url;
+  $('result').classList.add('show');
+});
+$('copy').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText($('out').value); $('copy').textContent = '완료!'; }
+  catch { $('out').select(); document.execCommand('copy'); $('copy').textContent = '완료!'; }
+  setTimeout(() => $('copy').textContent = '복사', 1500);
+});
+$('open').addEventListener('click', () => window.open($('out').value, '_blank'));
+</script>
 </body>
 </html>

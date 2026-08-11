@@ -243,12 +243,19 @@ footer .logo{color:#fff; justify-content:center; margin-bottom:10px; font-size:1
 </div>
 
 <script>
-/* URL 커스텀: ?to=지은&from=민준&d=2023-05-20(사귄 날) */
+/* URL 커스텀: ?groom=신랑&bride=신부&d=2023-05-20(사귄 날) · 구버전 ?to=&from= 도 지원 */
 const params = new URLSearchParams(location.search);
 const to = params.get('to'), from = params.get('from'), d0 = params.get('d');
-if (to) document.getElementById('badge').textContent = `💚 ${to}님 전용 초대장 · 1인 한정`;
-if (from) document.getElementById('thanks-msg').innerHTML =
-  `구독이 완료되었습니다.<br>세상에서 제일 행복하게 해줄게. 평생 잘 부탁해! — ${from}`;
+const groom = params.get('groom'), bride = params.get('bride');
+if (groom && bride) {
+  document.getElementById('badge').textContent = `💚 신랑 ${groom} ♥ 신부 ${bride} · 평생 구독 초대장`;
+  document.getElementById('thanks-msg').innerHTML =
+    `구독이 완료되었습니다.<br>${groom} ♥ ${bride} — 세상에서 제일 행복하게 해줄게. 평생 잘 부탁해!`;
+} else {
+  if (to) document.getElementById('badge').textContent = `💚 ${to}님 전용 초대장 · 1인 한정`;
+  if (from) document.getElementById('thanks-msg').innerHTML =
+    `구독이 완료되었습니다.<br>세상에서 제일 행복하게 해줄게. 평생 잘 부탁해! — ${from}`;
+}
 if (d0) {
   const diff = Math.floor((Date.now() - new Date(d0)) / 864e5) + 1;
   if (diff > 0) document.getElementById('days').innerHTML = `D+<em>${diff.toLocaleString('ko-KR')}</em>`;

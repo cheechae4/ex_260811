@@ -166,12 +166,19 @@ button{font-family:inherit; cursor:pointer; border:none; border-radius:999px; fo
 </div>
 
 <script>
-/* URL로 이름 커스텀: propose.html?to=지은&from=민준 */
+/* URL로 이름 커스텀: ?groom=신랑&bride=신부 (구버전 ?to=&from= 도 지원) */
 const params = new URLSearchParams(location.search);
 const to = params.get('to'), from = params.get('from');
-if (to) document.getElementById('to-name').textContent = `${to}에게 💌`;
-if (from) document.getElementById('thanks-msg').innerHTML =
-  `세상에서 제일 행복하게 해줄게.<br>평생 잘 부탁해 🥰 — ${from} 올림`;
+const groom = params.get('groom'), bride = params.get('bride');
+if (groom && bride) {
+  document.getElementById('to-name').textContent = `신랑 ${groom} 💍 신부 ${bride}`;
+  document.getElementById('thanks-msg').innerHTML =
+    `${groom} ♥ ${bride}<br>세상에서 제일 행복하게 해줄게.<br>평생 잘 부탁해 🥰`;
+} else {
+  if (to) document.getElementById('to-name').textContent = `${to}에게 💌`;
+  if (from) document.getElementById('thanks-msg').innerHTML =
+    `세상에서 제일 행복하게 해줄게.<br>평생 잘 부탁해 🥰 — ${from} 올림`;
+}
 
 const yes = document.getElementById('yes');
 const no = document.getElementById('no');
