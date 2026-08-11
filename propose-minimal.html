@@ -129,6 +129,26 @@ footer .logo{color:#fff; justify-content:center; margin-bottom:10px; font-size:1
   display:inline-block; background:var(--tint5); color:var(--shade2);
   font-size:13px; font-weight:600; border-radius:999px; padding:7px 16px;
 }
+/* ── 결혼식 날짜 입력 폼 ── */
+.date-popup{max-width:380px; text-align:left}
+.date-popup h2{font-size:22px; text-align:center; margin:0 0 8px}
+.date-popup .date-hint{color:var(--grey); font-size:13.5px; text-align:center; margin:0 0 24px; line-height:1.55}
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.field{margin-bottom:14px}
+.field label{display:block; font-size:12.5px; font-weight:600; color:var(--dgrey); margin-bottom:5px}
+.field input{
+  width:100%; font-family:inherit; font-size:15px; color:var(--secondary);
+  background:var(--white); border:1.5px solid var(--greyblue); border-radius:6px; padding:10px 12px;
+}
+.field input:focus{outline:2px solid var(--primary); outline-offset:1px; border-color:transparent}
+.tentative{
+  display:flex; align-items:flex-start; gap:8px; font-size:13.5px; color:var(--dgrey);
+  line-height:1.5; cursor:pointer; margin-bottom:6px;
+}
+.tentative input{width:16px; height:16px; margin-top:2px; accent-color:var(--primary); flex:none}
+.date-popup .btn{border:none; cursor:pointer}
+.date-popup .btn:disabled{opacity:.6; cursor:default}
+.date-err{color:var(--error); font-size:12.5px; margin:-8px 0 12px; min-height:1em}
 /* ── confetti (그린 틴트 팔레트만) ── */
 .confetti{position:fixed; z-index:11; top:-20px; pointer-events:none; animation:fall linear forwards; border-radius:2px}
 @keyframes fall{
@@ -233,6 +253,26 @@ footer .logo{color:#fff; justify-content:center; margin-bottom:10px; font-size:1
   © 2026 우리사이 주식회사 — 대표이사: 너와 나 · 사업 목적: 평생 행복
 </footer>
 
+<div class="overlay" id="date-overlay" role="dialog" aria-modal="true" aria-labelledby="date-title">
+  <div class="popup date-popup">
+    <h2 id="date-title">결혼식 날짜가 언제야? 💐</h2>
+    <p class="date-hint">아직 정하지 않았다면 대략적인 예상 날짜를 적어줘도 괜찮아요</p>
+    <form id="date-form">
+      <div class="field-row">
+        <div class="field"><label for="f-groom">신랑 이름</label><input id="f-groom" required placeholder="이름"></div>
+        <div class="field"><label for="f-bride">신부 이름</label><input id="f-bride" required placeholder="이름"></div>
+      </div>
+      <div class="field">
+        <label for="f-date">결혼식 날짜</label>
+        <input id="f-date" type="date" required>
+      </div>
+      <label class="tentative"><input type="checkbox" id="f-tentative"> 아직 날짜를 정하지 않았어요 (예상 날짜로 적을게요)</label>
+      <p class="date-err" id="date-err"></p>
+      <button type="submit" class="btn" id="date-submit" style="width:100%; margin-top:6px">확인하고 계속하기 <span class="arrow">→</span></button>
+    </form>
+  </div>
+</div>
+
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="thanks">
   <div class="popup">
     <div class="check">✓</div>
@@ -242,6 +282,8 @@ footer .logo{color:#fff; justify-content:center; margin-bottom:10px; font-size:1
   </div>
 </div>
 
+<script src="supabase-config.js" onerror="console.warn('[proposal] supabase-config.js 없음 — 저장 없이 진행합니다')"></script>
+<script src="proposal-shared.js"></script>
 <script>
 /* URL 커스텀: ?groom=신랑&bride=신부&d=2023-05-20(사귄 날) · 구버전 ?to=&from= 도 지원 */
 const params = new URLSearchParams(location.search);
@@ -343,13 +385,44 @@ setInterval(() => {
     flee(undefined, undefined, {});
 }, 3800);
 
-/* 좋아!! → 팝업 + 그린 컨페티 */
+/* 좋아!! → 결혼식 날짜를 먼저 물어보는 팝업 */
+const dateOverlay = document.getElementById('date-overlay');
+const dateForm = document.getElementById('date-form');
+const dateErr = document.getElementById('date-err');
+const dateSubmit = document.getElementById('date-submit');
+const fGroom = document.getElementById('f-groom'), fBride = document.getElementById('f-bride');
+if (groom) fGroom.value = groom;
+if (bride) fBride.value = bride;
+
 yes.addEventListener('click', () => {
-  const d = new Date();
-  document.getElementById('stamp').textContent =
-    `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} 계약 체결일 · 유효기간 평생`;
-  document.getElementById('overlay').classList.add('show');
   no.style.display = 'none';
+  dateOverlay.classList.add('show');
+  (fGroom.value ? fBride : fGroom).focus();
+});
+
+dateForm.addEventListener('submit', async e => {
+  e.preventDefault();
+  const g = fGroom.value.trim(), b = fBride.value.trim(), wd = document.getElementById('f-date').value;
+  const tentative = document.getElementById('f-tentative').checked;
+  if (!g || !b || !wd) { dateErr.textContent = '이름과 날짜를 모두 입력해 줘!'; return; }
+  dateErr.textContent = '';
+  dateSubmit.disabled = true;
+  dateSubmit.textContent = '저장하는 중…';
+
+  if (window.ProposalShared) {
+    await window.ProposalShared.submitProposalResponse({
+      groom: g, bride: b, weddingDate: wd, isTentative: tentative, pageVersion: 'minimal',
+    });
+  }
+
+  const wdFmt = wd.replaceAll('-', '.');
+  document.getElementById('thanks-msg').innerHTML =
+    `구독이 완료되었습니다.<br>${g} ♥ ${b} — 세상에서 제일 행복하게 해줄게. 평생 잘 부탁해!`;
+  document.getElementById('stamp').textContent =
+    `결혼식 ${tentative ? '예상일' : '예정일'} ${wdFmt}${tentative ? ' (미정)' : ''}`;
+
+  dateOverlay.classList.remove('show');
+  document.getElementById('overlay').classList.add('show');
   confetti(70);
 });
 const GREENS = ['#4CAF4F','#66BB69','#81C784','#A5D6A7','#C8E6C9','#FBC02D'];
