@@ -168,6 +168,32 @@ button{font-family:inherit; cursor:pointer; border:none; border-radius:999px; fo
 }
 .date-popup button[type="submit"]:disabled{opacity:.6}
 .date-err{color:var(--rose-deep); font-size:12.5px; font-weight:800; margin:-6px 0 10px; min-height:1em}
+/* ── 홀 추천 카드 (고마워 팝업과 동시에 등장) ── */
+.hall-promo{
+  position:fixed; z-index:12; right:20px; bottom:20px;
+  width:260px; max-width:calc(100vw - 32px);
+  background:var(--cream); border-radius:22px; padding:18px 18px 16px;
+  box-shadow:0 16px 36px rgba(107,50,71,.28);
+  border:2.5px dashed #FFD3E0;
+  transform:translateY(20px) rotate(-1.5deg); opacity:0; pointer-events:none;
+  transition:transform .45s cubic-bezier(.2,1.5,.4,1), opacity .4s;
+}
+.hall-promo.show{transform:translateY(0) rotate(-1.5deg); opacity:1; pointer-events:auto}
+.hall-promo .x{
+  position:absolute; top:8px; right:10px; background:none; border:none; cursor:pointer;
+  color:var(--muted); font-size:15px; line-height:1; padding:4px; font-weight:900;
+}
+.hall-promo .cap3{font-size:13px; font-weight:900; color:var(--rose-deep); margin:0 0 6px}
+.hall-promo h3{font-size:15px; font-weight:900; color:var(--ink); margin:0 0 6px; padding-right:14px}
+.hall-promo p{font-size:12.5px; color:var(--muted); font-weight:700; margin:0 0 12px; line-height:1.5}
+.hall-promo a{
+  display:block; text-align:center; width:100%; text-decoration:none;
+  font-size:13.5px; font-weight:900; color:#fff;
+  background:linear-gradient(180deg,#FF9BB9,var(--rose) 45%,var(--rose-deep));
+  border:2.5px solid #fff; border-radius:999px; padding:9px 0;
+  box-shadow:0 4px 0 #E8A5BC;
+}
+@media (max-width:520px){ .hall-promo{right:14px; left:14px; width:auto; bottom:14px} }
 @media (prefers-reduced-motion: reduce){
   .scene .bunny,.scene .ring,#yes,.popup .big,#no.tiptoe{animation:none}
   .heart{display:none}
@@ -216,6 +242,14 @@ button{font-family:inherit; cursor:pointer; border:none; border-radius:999px; fo
     <p id="thanks-msg">세상에서 제일 행복하게 해줄게.<br>평생 잘 부탁해 🥰</p>
     <div><span class="stamp" id="stamp"></span></div>
   </div>
+</div>
+
+<div class="hall-promo" id="hall-promo">
+  <button class="x" id="hall-close" aria-label="닫기">✕</button>
+  <p class="cap3">🏛️ 웨딩홀 추천</p>
+  <h3>예식장도 같이 알아볼까?</h3>
+  <p>성균관컨벤션에서 우리한테 맞는 홀을 찾아보자!</p>
+  <a id="hall-link" href="https://www.skkconvention.co.kr/" target="_blank" rel="noopener">보러가기 💕</a>
 </div>
 
 <script src="/api/config" onerror="console.warn('[proposal] /api/config 로드 실패 — 저장 없이 진행합니다')"></script>
@@ -370,6 +404,7 @@ dateForm.addEventListener('submit', async e => {
 
   dateOverlay.classList.remove('show');
   document.getElementById('overlay').classList.add('show');
+  document.getElementById('hall-promo').classList.add('show');
   burst(44);
 });
 
@@ -391,4 +426,18 @@ function burst(n) {
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   setInterval(() => spawnHeart(Math.random() * innerWidth, 8 + Math.random() * 5, 13 + Math.random() * 13), 1100);
 }
+
+/* 홀 추천 카드: 클릭 GA4 이벤트 추적 + 닫기 */
+document.getElementById('hall-link').addEventListener('click', () => {
+  if (typeof gtag === 'function') {
+    gtag('event', 'click_hall_recommend', {
+      event_category: 'engagement',
+      event_label: 'skk_convention',
+      page_version: 'cute',
+    });
+  }
+});
+document.getElementById('hall-close').addEventListener('click', () => {
+  document.getElementById('hall-promo').classList.remove('show');
+});
 </script>

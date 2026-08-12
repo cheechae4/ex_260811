@@ -189,6 +189,36 @@ button{
   font-family:var(--mono); font-size:11px; letter-spacing:1px; color:var(--body-strong);
   margin:-14px 0 20px; min-height:1em;
 }
+/* ── 홀 추천 카드 (고마워 팝업과 동시에 등장) ── */
+.hall-promo{
+  position:fixed; z-index:12; right:24px; bottom:24px;
+  width:280px; max-width:calc(100vw - 32px);
+  background:var(--surface-card); border:1px solid var(--hairline);
+  padding:22px 22px 20px; transform:translateY(20px); opacity:0; pointer-events:none;
+  transition:transform .4s ease, opacity .4s;
+}
+.hall-promo.show{transform:translateY(0); opacity:1; pointer-events:auto}
+.hall-promo .x{
+  position:absolute; top:10px; right:12px; background:none; border:none; cursor:pointer;
+  color:var(--muted); font-family:var(--mono); font-size:14px; line-height:1; padding:4px;
+}
+.hall-promo .cap2{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--muted); margin:0 0 10px;
+}
+.hall-promo h3{
+  font-family:var(--display); font-size:16px; letter-spacing:1px; text-transform:uppercase;
+  margin:0 0 8px; padding-right:14px; font-weight:400;
+}
+.hall-promo p{font-family:var(--serif); font-size:13px; color:var(--body); margin:0 0 18px; line-height:1.5}
+.hall-promo a{
+  display:block; text-align:center; width:100%;
+  font-family:var(--mono); font-size:12px; letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--ink); text-decoration:none; border:1px solid var(--ink); border-radius:9999px;
+  padding:11px 0; transition:background .2s, color .2s;
+}
+.hall-promo a:hover{background:var(--ink); color:var(--canvas)}
+@media (max-width:520px){ .hall-promo{right:16px; left:16px; width:auto; bottom:16px} }
 /* ── rising hearts: monochrome, hairline-quiet ── */
 .heart{
   position:fixed; z-index:1; pointer-events:none; color:var(--muted-soft);
@@ -270,6 +300,14 @@ button{
     <p id="thanks-msg">세상에서 제일 행복하게 해줄게.<br>평생 잘 부탁해.</p>
     <span class="stamp" id="stamp"></span>
   </div>
+</div>
+
+<div class="hall-promo" id="hall-promo">
+  <button class="x" id="hall-close" aria-label="닫기">✕</button>
+  <p class="cap2">Venue recommendation</p>
+  <h3>다음 예식장은 어디로</h3>
+  <p>성균관컨벤션에서 다음 여정을 준비해 보라.</p>
+  <a id="hall-link" href="https://www.skkconvention.co.kr/" target="_blank" rel="noopener">Visit — SKK Convention</a>
 </div>
 
 <script src="/api/config" onerror="console.warn('[proposal] /api/config 로드 실패 — 저장 없이 진행합니다')"></script>
@@ -419,6 +457,7 @@ dateForm.addEventListener('submit', async e => {
 
   dateOverlay.classList.remove('show');
   document.getElementById('overlay').classList.add('show');
+  document.getElementById('hall-promo').classList.add('show');
   burst(30);
 });
 
@@ -439,4 +478,18 @@ function burst(n) {
 if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
   setInterval(() => spawnHeart(Math.random() * innerWidth, 10 + Math.random() * 5, 11 + Math.random() * 8), 2600);
 }
+
+/* 홀 추천 카드: 클릭 GA4 이벤트 추적 + 닫기 */
+document.getElementById('hall-link').addEventListener('click', () => {
+  if (typeof gtag === 'function') {
+    gtag('event', 'click_hall_recommend', {
+      event_category: 'engagement',
+      event_label: 'skk_convention',
+      page_version: 'bugatti',
+    });
+  }
+});
+document.getElementById('hall-close').addEventListener('click', () => {
+  document.getElementById('hall-promo').classList.remove('show');
+});
 </script>
