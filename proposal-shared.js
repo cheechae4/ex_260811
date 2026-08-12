@@ -5,7 +5,7 @@
 (function () {
   const READY = (async () => {
     if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) {
-      console.warn('[proposal] supabase-config.js가 없어서 응답이 저장되지 않습니다. supabase-config.example.js를 참고하세요.');
+      console.warn('[proposal] SUPABASE_URL / SUPABASE_ANON_KEY 환경변수가 없어서 응답이 저장되지 않습니다. Vercel 프로젝트 설정 → Environment Variables를 확인하세요.');
       return null;
     }
     const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
